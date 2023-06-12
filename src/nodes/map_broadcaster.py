@@ -33,10 +33,10 @@ if __name__ == '__main__':
         message = dict()
 
         # Lookup required transforms
-        for obj in ['/board0']:
+        for obj in ['/board0','/board1','/board2','/board3']:
             # TODO BEGIN MRSS: Look up a relevant transform
             try:
-                (trans,_) = listener.lookupTransform('/board0', obj, rospy.Time(0))
+                (trans,_) = listener.lookupTransform('/rig', obj, rospy.Time(0))
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 continue
 
