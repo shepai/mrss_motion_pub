@@ -2,17 +2,17 @@
     <arg name="twist" default="false"/>
 
     <!--Goal Broadcaster-->
-    <node pkg="mrss_motion" type="goal_broadcaster.py"
+    <node pkg="team_6_mrss" type="goal_broadcaster.py"
           name="goal_broadcaster" ns="pointnav" />
 
     <!--Map Broadcaster-->
-    <node pkg="mrss_motion" type="map_broadcaster.py" name="map_broadcaster"/>
+    <node pkg="team_6_mrss" type="map_broadcaster.py" name="map_broadcaster"/>
 
     <!--Motion Planner-->
     <group if="$(arg twist)">
         <node pkg="go1-math-motion" type="twist_sub" name="node_twist_sub" output="screen"/>
-        <node pkg="mrss_motion" type="planner.py"
-              name="goal_follower" ns="mrss_motion" />
+        <node pkg="team_6_mrss" type="planner.py"
+              name="goal_follower" ns="team_6_mrss" />
     </group>
 
 </launch>
