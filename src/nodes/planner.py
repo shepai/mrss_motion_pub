@@ -33,16 +33,23 @@ class Planner:
         self.map = json.loads(msg.data)
 
         # TODO BEGIN MRSS: Use map for planning
-
+        GOAL=self.map['/goal'] #gives x and y
+        #s=d/t
+        time=10
+        s=GOAL/time #[speed x, speed y]
+        self.cmd.linear.x=s[0]
+        self.cmd.linear.y=s[1]
+        self.cmd.angular.z = 0.
         # END MRSS
 
         # Twist
         self.cmd = geometry_msgs.msg.Twist()
 
         # TODO BEGIN MRSS: Update the current command
-        self.cmd.linear.x = 0.
-        self.cmd.linear.y = 0.
-        self.cmd.angular.z = 0.
+        if GOAL[0]<0.2 or GOAL[1] <0.2:
+            self.cmd.linear.x = 0.
+            self.cmd.linear.y = 0.
+            self.cmd.angular.z = 0.
         # END MRSS
 
     def spin(self):
