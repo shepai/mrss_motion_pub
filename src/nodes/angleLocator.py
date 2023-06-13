@@ -46,16 +46,18 @@ class Planner:
 
         # Twist
         self.cmd = geometry_msgs.msg.Twist()
-
-        # TODO BEGIN MRSS: Update the current command
-        if GOAL1[1]<0.1:
+        ang_speed=0
+        if GOAL1[1]<-0.1:
+            self.cmd.angular.z=0.15
+        elif GOAL1[1]>0.1:
+            self.cmd.angular.z=-0.15
+        elif GOAL1[0]>0.1:
+            self.cmd.linear.x = 0.1
+        else:
             self.cmd.linear.x = 0.
             self.cmd.linear.y = 0.
-            self.cmd.angular.z = 0.
-        else:
-            speed=0.1
-            if GOAL1[1]>0: speed*=-1
-            self.cmd.angular.z = speed
+            self.cmd.angular.z=0
+        # TODO BEGIN MRSS: Update the current command
         # END MRSS
 
     def spin(self):
