@@ -36,17 +36,10 @@ class Planner:
         GOAL1=self.map['/goal'] #gives x and y
         #GOAL2=self.map['/goal2'] # assuming goal 2 is the side gives x and y
         #get angle between
-        #angle=math.atan(GOAL1[1]/GOAL1[0])
-        #s=d/t
-        #time=10
-        #self.cmd.linear.x=GOAL1[0]/time
-        #self.cmd.linear.y=GOAL1[1]/time
-        
         # END MRSS
 
         # Twist
         self.cmd = geometry_msgs.msg.Twist()
-        ang_speed=0
         if GOAL1[1]<-0.1:
             self.cmd.angular.z=0.15
         elif GOAL1[1]>0.1:
@@ -56,7 +49,7 @@ class Planner:
         else:
             self.cmd.linear.x = 0.
             self.cmd.linear.y = 0.
-            self.cmd.angular.z=0
+            self.cmd.angular.z= 0.
         
         # END MRSS
 
