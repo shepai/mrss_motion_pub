@@ -33,24 +33,22 @@ class Planner:
         self.map = json.loads(msg.data)
 
         # TODO BEGIN MRSS: Use map for planning
-        GOAL1=self.map['/goal'] #gives x and y
-        #GOAL2=self.map['/goal2'] # assuming goal 2 is the side gives x and y
-        #get angle between
-        # END MRSS
-
-        # Twist
+        GOAL1=self.map['/goal']
+        if self.map.get('/obstacle1',None)!=None:
+            coords_1=self.map['/obstacle1']
+        if self.map.get('/obstacle2',None)!=None:
+            coords_2=self.map['/obstacle2']
         self.cmd = geometry_msgs.msg.Twist()
         if GOAL1[1]<-0.1:
-            self.cmd.angular.z=0.15
+            self.cmd.angular.z=-0.3
         elif GOAL1[1]>0.1:
-            self.cmd.angular.z=-0.15
-        elif GOAL1[0]>0.1:
-            self.cmd.linear.x = 0.1
+            self.cmd.angular.z=0.3
+        elif GOAL1[1]<-0.1:
+            self.cmd.angular.x=0.2
         else:
-            self.cmd.linear.x = 0.
-            self.cmd.linear.y = 0.
-            self.cmd.angular.z= 0.
-        
+            self.cmd.angular.x=0.
+            self.cmd.angular.y=0.
+            self.cmd.angular.z=0.
         # END MRSS
 
     def spin(self):

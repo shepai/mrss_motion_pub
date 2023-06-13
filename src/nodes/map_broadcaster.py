@@ -33,7 +33,7 @@ if __name__ == '__main__':
         message = dict()
 
         # Lookup required transforms
-        for obj in ['/board0','/board1','/board2','/board3','/goal']:
+        for obj in ['/board0','/board1','/board2','/board3','/goal','/obstacle1','/obstacle2']:
             # TODO BEGIN MRSS: Look up a relevant transform
             try:
                 (trans,_) = listener.lookupTransform('/rig', obj, rospy.Time(0))
