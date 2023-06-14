@@ -43,7 +43,7 @@ class Planner:
             self.cmd.angular.z=-0.3
         elif GOAL1[1]>0.1:
             self.cmd.angular.z=0.3
-        elif GOAL1[1]<-0.1:
+        elif GOAL1[0]>0.1:
             self.cmd.angular.x=0.2
         else:
             self.cmd.angular.x=0.
