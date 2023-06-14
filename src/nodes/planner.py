@@ -34,10 +34,10 @@ class Planner:
 
         # TODO BEGIN MRSS: Use map for planning
         GOAL1=self.map['/goal']
-        BOARD0=self.map['/board1']
-        BOARD1=self.map['/board2']
-        BOARD2=self.map['/board3']
-        BOARD3=self.map['/board4']
+        BOARD0=self.map['/board0']
+        BOARD1=self.map['/board1']
+        BOARD2=self.map['/board2']
+        BOARD3=self.map['/board3']
         if self.map.get('/obstacle1',None)!=None:
             coords_1=self.map['/obstacle1']
         if self.map.get('/obstacle2',None)!=None:
@@ -49,28 +49,30 @@ class Planner:
             elif GOAL1[1]>0.1:
                 self.cmd.angular.z=0.3
             else:
-                if (coords_1[0]>0) and (-0.1<coords_1[1]<0.1):
-                    idx_max_dist_y = np.argmax([abs(BOARD0[1]),abs(BOARD1[1]),abs(BOARD2[1]),abs(BOARD3[1])]) 
-                    if idx_max_dist_y == 0:
-                        self.cmd.angular.y=0.2*(BOARD0[1]/abs(BOARD0[1]))
-                    elif idx_max_dist_y == 1:
-                        self.cmd.angular.y=0.2*(BOARD1[1]/abs(BOARD1[1]))
-                    elif idx_max_dist_y == 2:
-                        self.cmd.angular.y=0.2*(BOARD2[1]/abs(BOARD2[1]))
+                if (self.map.get('/obstacle1',None)!=None):
+                    if (coords_1[0]>0) and (-0.1<coords_1[1]<0.1):
+                        idx_max_dist_y = np.argmax([abs(BOARD0[1]),abs(BOARD1[1]),abs(BOARD2[1]),abs(BOARD3[1])]) 
+                        if idx_max_dist_y == 0:
+                            self.cmd.linear.y=0.2*(BOARD0[1]/abs(BOARD0[1]))
+                        elif idx_max_dist_y == 1:
+                            self.cmd.linear.y=0.2*(BOARD1[1]/abs(BOARD1[1]))
+                        elif idx_max_dist_y == 2:
+                            self.cmd.linear.y=0.2*(BOARD2[1]/abs(BOARD2[1]))
+                        else:
+                            self.cmd.linear.y=0.2*(BOARD3[1]/abs(BOARD3[1]))
                     else:
-                        self.cmd.angular.y=0.2*(BOARD3[1]/abs(BOARD3[1]))
-                    
+                        self.cmd.linear.x=0.2
                 
                 else:
-                    self.cmd.angular.x=0.2
+                    self.cmd.linear.x=0.2
         elif GOAL1[0]<0.1:
             if GOAL1[1]<0.:
                 self.cmd.angular.z=-0.3
             else:
                 self.cmd.angular.z=0.3
         else:
-            self.cmd.angular.x=0.
-            self.cmd.angular.y=0.
+            self.cmd.linear.x=0.
+            self.cmd.linear.y=0.
             self.cmd.angular.z=0.
         # END MRSS
 
