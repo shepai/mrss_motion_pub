@@ -14,7 +14,7 @@ git clone $YOUR_FORK_URL
 ```
 
 Your first commit should be to replace all instances of ```mrss_motion``` with ```$TEAM_NAME``` in the following files:
-- ```tagslam_root/src/$TEAM_NAME/CMakeLists.txt```
+- ```tagslam_root/src/$TEAM_NAME/package.xml```
  - ```tagslam_root/src/$TEAM_NAME/CMakeLists.txt```
  - ```tagslam_root/src/$TEAM_NAME/src/launch/motion_planning.launch```
 
@@ -30,11 +30,22 @@ In any terminal where you need to use your motion planning package, you should r
 source ~/tagslam_root/devel/setup.bash
 ```
 
-Now make sure that the main [TagSLAM MRSS launch file](https://github.com/sachaMorin/tagslam_root/blob/master/README-MRSS.md) is running in another terminal. Then you can launch motion planning with
+Now make sure that the main [TagSLAM MRSS launch file](https://github.com/sachaMorin/tagslam_root/blob/master/README-MRSS.md) is running in another terminal:
+
 ```shell
-roslaunch $TEAM_NAME motion_planning.launch twist:=0
+roslaunch tagslam mrss_laptop.launch rviz:=1
 ```
-Setting ```twist:=1``` will launch the planner and broadcast twist commands. The robot may start moving!
+
+Then you can launch motion planning with
+```shell
+roslaunch $TEAM_NAME motion_planning.launch twist:=0 rl_policy:=0
+```
+Setting ```twist:=1``` will launch the Unitree controller. The controller will listen to the ```cmd_vel``` topic and track
+the velocities published by the planner node.
+
+Setting ```rl_policy:=1``` will launch an RL controller. Make sure to update your policy path in ```tagslam_root/src/$TEAM_NAME/nodes/rl_policy.py```.
+
+**Do not use both twist and rl_policy at the same time.**
 
 ## Workshop
 The launch file spins up 3 ROS nodes:
