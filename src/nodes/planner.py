@@ -7,7 +7,42 @@ import rospy
 from std_msgs.msg import String
 import geometry_msgs.msg
 import json
+import numpy as np
 
+def findGrid(events={'/board0':[0.5,0.2],'/board1':[0.1,0.3],'/board2':[-0.3,-0.2],'/board3':[0.1,-0.2],'/goal':[-0.3,-0.2],'/obstacle1':[-0.1,-0.2],'/obstacle1':[-0.3,-0.1]}):
+    #get total distances from x and y to estimate grid size
+    #convert to integers of single digit
+    totalX=abs(int(events['/board0'][0]*10))+abs(int(events['/board2'][0]*10))
+    totalY=abs(int(events['/board1'][1]*10))+abs(int(events['/board3'][1]*10))
+    robot_x=int(events['/board0'][0]*10)
+    robot_y=int(events['/board1'][1]*10)
+    #devide into grid
+    array=np.zeros((totalX,totalY))
+    #calculate distances from target
+    goal_x=abs(events['/goal'][0])*10
+    goal_y=abs(events['/goal'][1])*10
+    for x in range(array.shape[0]):
+        for y in range(array.shape[1]):
+            dist_from_target=(((goal_x-x)**2+(goal_y-y)**2)**0.5) /10 #euclidean distance divide by 10 to get in meters
+            array[x][y]=dist_from_target
+            #increase distances to target
+            for target in [events.get('/obstacle0',None),events.get('/obstacle1',None),events.get('/obstacle2',None)]: #loop through 
+                if target!=None: #if target exists
+                    px=target[0]*10
+                    py=target[1]*10
+                    dist_from_target*=1/((((px-x)**2+(py-y)**2)**0.5) /10) #gather distance from target
+                    array[x][y]+=dist_from_target
+    new_vel=[0,0,0]
+    min_v=100
+    #loop through surrounding square
+    for i in range(-1,1):
+        for j in range(-1,1):
+            if robot_x+i<totalX and robot_y+j<totalY and (i!=0 and j!=0): #check surrounding and not self
+                if array[robot_x+i][robot_y+j]<min_v: #get smallest path
+                    min_v=array[robot_x+i][robot_y+j]
+                    new_vel=[i/10,j/10,0] #save direction as velocities
+    
+    return new_vel
 
 class Planner:
     def __init__(self):
@@ -77,7 +112,10 @@ class Planner:
                 self.cmd.linear.y=0.
                 self.cmd.angular.z=0.
 
-
+        #experimental target code
+        #vel=findGrid(events=self.map)
+        #self.cmd.linear.x=vel[0]
+        #self.cmd.linear.y=vel[1]
         # END MRSS
 
     def spin(self):
