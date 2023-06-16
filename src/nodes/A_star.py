@@ -69,7 +69,7 @@ class Planner:
                             self.all_local+=1 #increase counter so it checks next object
                             self.cmd.angular.z=0
                             self.cmd.linear.x=0
-                            self.localized[self.route_plan[self.current_target]]=TEMP_GOAL[0] #store x distance
+                            self.cmd.linear.y=0
                     elif TEMP_GOAL[1]<-0.1: #rotate to closest
                         self.cmd.angular.z=-0.3
                     elif TEMP_GOAL[1]>0.1: #rotate to closest
