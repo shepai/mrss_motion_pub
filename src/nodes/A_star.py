@@ -6,7 +6,8 @@ import rospy
 from std_msgs.msg import String
 import geometry_msgs.msg
 import json
-
+import time
+import random
 
 class Planner:
     def __init__(self):
@@ -26,8 +27,11 @@ class Planner:
         self.rate = rospy.Rate(10)  # Publisher frequency
 
         # TODO BEGIN MRSS: Add attributes (If needed)
+        #store localized in format name:distance
         self.localized={'/board0':False,'/board1':False,'/board2':False,'/board3':False,'/goal':False,'/obstacle0':False,'/obstacle1':False,'/obstacle2':False}
-        self.angles={'/board0':0,'/board1':0,'/board2':0,'/board3':0,'/goal':0,'/obstacle0':0,'/obstacle1':0,'/obstacle2':0}
+        #store angles in format name:[angle,time]
+        self.angles={'/board0':[0,0],'/board1':[0,0],'/board2':[0,0],'/board3':[0,0],'/goal':[0,0],'/obstacle0':[0,0],'/obstacle1':[0,0],'/obstacle2':[0,0]}
+        self.heuristics={'/board0':0,'/board1':0,'/board2':0,'/board3':0,'/goal':0,'/obstacle0':0,'/obstacle1':0,'/obstacle2':0}
         self.all_local=0
         # END MRSS
         self.route_plan=None
@@ -42,23 +46,26 @@ class Planner:
                 key=self.localized(list(self.localized.keys())[c])
                 c+=1
             GOAL1=self.map.get(key,[100,0]) #get current position
+            if self.angles[key][0]==0: #no angle has been set
+                self.angles[key][1]=time.time() #start timer
             if GOAL1[1]<0.05 and GOAL1[1]>-0.05: #facing the target
                 self.all_local+=1 #increase counter so it checks next object
                 self.cmd.angular.z=0
                 self.localized[key]=GOAL1[0] #store x 
+                self.angles[key][1]=time.time()-self.angles[key][1] #get total time it took
                 #TODO Turn anglar velocities into actual angles
             elif GOAL1[1]<-0.05: #rotate to closest
                 self.cmd.angular.z=-0.2
-                self.angles[key]-=0.2
+                self.angles[key][0]-=0.2
             elif GOAL1[1]>0.05: #rotate to closest
                 self.cmd.angular.z=0.2
-                self.angles[key]+=0.2
+                self.angles[key][0]+=0.2
         else: #only run this if all mapping is done
             if self.route_plan==None: #route has not been plan
                 #calculate each stop via A*
-                import random
                 self.route_plan=[random.choice(list(self.localized.keys()[0:4])),'/goal']
                 self.current_target=0
+                
             else: #follow route
                 if self.current_target<len(self.route_plan):
                     TEMP_GOAL=self.map.get(self.route_plan[self.current_target],[100,0]) #get current position
