@@ -1,4 +1,4 @@
-#!/home/sacha/go1-rl/go1-venv/bin/python
+#!/usr/bin/env python3
 # Reads the map output (see map_broadcaster.py) and publishes twist commands to reach the goal
 
 from curses import def_prog_mode
