@@ -50,10 +50,13 @@ class Planner:
                 self.angles[key][1]=time.time() #start timer
             if GOAL1[1]<0.05 and GOAL1[1]>-0.05: #facing the target
                 self.all_local+=1 #increase counter so it checks next object
+                endSpeed=self.cmd.angular.z
                 self.cmd.angular.z=0
                 self.localized[key]=GOAL1[0] #store x 
                 self.angles[key][1]=time.time()-self.angles[key][1] #get total time it took
-                #TODO Turn anglar velocities into actual angles
+                #Turn anglar velocities into actual angles
+                angle = endSpeed * self.angles[key][1]
+                self.angles[key][0]=angle
             elif GOAL1[1]<-0.05: #rotate to closest
                 self.cmd.angular.z=-0.2
                 self.angles[key][0]-=0.2
@@ -62,6 +65,8 @@ class Planner:
                 self.angles[key][0]+=0.2
         else: #only run this if all mapping is done
             if self.route_plan==None: #route has not been plan
+                #TODO calcu.ate distaces from each point
+                
                 #calculate each stop via A*
                 self.route_plan=[random.choice(list(self.localized.keys()[0:4])),'/goal']
                 self.current_target=0
