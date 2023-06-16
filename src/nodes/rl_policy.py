@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/home/sacha/go1-rl/go1-venv/bin/python
 # Reads the map output (see map_broadcaster.py) and publishes twist commands to reach the goal
 
 import numpy as np
