@@ -139,7 +139,7 @@ class Planner:
                         nodes.append(['a',names[i],1])
                 #TODO calculate each stop via A*
                 #self.route_plan=[random.choice(list(self.localized.keys()[0:4])),'/goal']
-                path = astar('a', '/goal', nodes)
+                self.route_plan = astar('a', '/goal', nodes)
                 self.current_target=0
                 
             else: #follow route
