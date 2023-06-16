@@ -8,6 +8,7 @@ import geometry_msgs.msg
 import json
 import time
 import random
+import math
 
 class Planner:
     def __init__(self):
@@ -42,8 +43,8 @@ class Planner:
         if self.all_local<len(list(self.localized.keys())): #has not mapped out environment. 
             c=0
             key=""
-            while c<len(list(self.localized.keys())) and self.localized.get(key,True)==False: #loop till found unknown
-                key=self.localized(list(self.localized.keys())[c])
+            while c<len(list(self.localized.keys())) and self.localized.get(key,True)!=False: #loop till found unknown
+                key=list(self.localized.keys())[c]
                 c+=1
             GOAL1=self.map.get(key,[100,0]) #get current position
             if self.angles[key][0]==0: #no angle has been set
@@ -65,9 +66,18 @@ class Planner:
                 self.angles[key][0]+=0.2
         else: #only run this if all mapping is done
             if self.route_plan==None: #route has not been plan
-                #TODO calcu.ate distaces from each point
+                #TODO calculate distaces from each point
+                nodes=[]
+                names=list(self.localized.keys())
+                for i,key in enumerate(names):
+                    if i!=0 and self.angles.get(names[i],None)!=None: #ignore first one
+                        a=self.localized[names[i]]
+                        b=self.localized[names[i-1]]
+                        angle=math.radians(self.angles[names[i]][0]) #convert to radians
+                        c=((a**2+b**2)-(2*a*b*math.cos(angle)))**0.5 #cosine rule
+                        nodes.append([names[i],names[i-1],c])
                 
-                #calculate each stop via A*
+                #TODO calculate each stop via A*
                 self.route_plan=[random.choice(list(self.localized.keys()[0:4])),'/goal']
                 self.current_target=0
                 
