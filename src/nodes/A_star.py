@@ -9,6 +9,72 @@ import json
 import time
 import random
 import math
+import heapq
+
+# A* algorithm implementation
+def astar(start, goal, nodes):
+    # Helper function to calculate the Euclidean distance between two points
+    def distance(ar1,ar2):
+        ar_1=100
+        for i in range(len(nodes)): #gather node
+            if nodes[i][0]==ar1 and nodes[i][1]==ar2:
+                ar_1=nodes[i][2]
+        return ar_1
+    def get(a):
+        ar_1=[]
+        for i in range(len(nodes)): #gather node
+            if nodes[i][0]==a:
+                ar_1=nodes[i]
+        return ar_1
+    # Define the movement costs for horizontal, vertical, and diagonal movements
+    move_costs = nodes
+
+    # Initialize open and closed sets
+    open_set = [(0, start)]  # Priority queue for nodes to be visited
+    closed_set = set()       # Set of visited nodes
+    came_from = {}           # Dictionary to store the previous node in the optimal path
+
+    # Initialize g and f scores for the start node
+    g_scores = {start: 0}
+    f_scores = {start: distance(start, goal)}
+
+    while open_set:
+        # Get the node with the lowest f score
+        current_f, current_node = heapq.heappop(open_set)
+
+        if current_node == goal:
+            # Reconstruct the path when the goal is reached
+            path = []
+            while current_node in came_from:
+                path.append(current_node)
+                current_node = came_from[current_node]
+            path.append(start)
+            path.reverse()
+            return path
+
+        closed_set.add(current_node)
+
+        # Explore neighboring nodes
+        for key in move_costs:
+            current_node=get(current_node)
+            if len(current_node)>0:
+                move_cost=current_node[2]
+                neighbor = current_node[1]
+                tentative_g = g_scores[current_node[0]] + move_cost
+
+                if neighbor in closed_set:
+                    continue
+
+                if neighbor not in g_scores or tentative_g < g_scores[neighbor]:
+                    # Update the scores and add the neighbor to the open set
+                    came_from[neighbor] = current_node[0]
+                    g_scores[neighbor] = tentative_g
+                    f_scores[neighbor] = tentative_g + distance(neighbor, goal)
+                    heapq.heappush(open_set, (f_scores[neighbor], neighbor))
+
+    # No path found
+    return None
+
 
 class Planner:
     def __init__(self):
@@ -76,9 +142,10 @@ class Planner:
                         angle=math.radians(self.angles[names[i]][0]) #convert to radians
                         c=((a**2+b**2)-(2*a*b*math.cos(angle)))**0.5 #cosine rule
                         nodes.append([names[i],names[i-1],c])
-                
+                        nodes.append(['a',names[i],1])
                 #TODO calculate each stop via A*
-                self.route_plan=[random.choice(list(self.localized.keys()[0:4])),'/goal']
+                #self.route_plan=[random.choice(list(self.localized.keys()[0:4])),'/goal']
+                path = astar('a', '/goal', nodes)
                 self.current_target=0
                 
             else: #follow route
