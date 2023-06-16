@@ -170,6 +170,8 @@ class Planner:
             coords_1=self.map['/obstacle1']
         if self.map.get('/obstacle2',None)!=None:
             coords_2=self.map['/obstacle2']
+        if self.map.get('/obstacle3',None)!=None:
+            coords_3=self.map['/obstacle3']
         self.cmd = geometry_msgs.msg.Twist()
         if GOAL1[1]<-0.1: #If y distance is more than 10 cm turn the robot until it isn't 
             self.cmd.angular.z=-0.3    
@@ -204,7 +206,38 @@ class Planner:
                 else:
                     self.cmd.linear.y=0.2*(BOARD3[1]/abs(BOARD3[1]))
                     self.cmd.linear.x=0.
-                           
+
+            elif (self.map.get('/obstacle2',None)!=None) and (coords_2[0]>0) and (-0.3<coords_2[1]<0.3): #if you see an obstacle, move to the right or to the left, depending on where the farest board is from the obstacle
+                idx_max_dist_y = np.argmax([abs(BOARD0[1]-coords_2[1]),abs(BOARD1[1]-coords_2[1]),abs(BOARD2[1]-coords_2[1]),abs(BOARD3[1]-coords_2[1])]) 
+                if idx_max_dist_y == 0:
+                    self.cmd.linear.y=0.2*(BOARD0[1]/abs(BOARD0[1]))
+                    self.cmd.linear.x=0.
+                elif idx_max_dist_y == 1:
+                    self.cmd.linear.y=0.2*(BOARD1[1]/abs(BOARD1[1]))
+                    self.cmd.linear.x=0.
+                elif idx_max_dist_y == 2:
+                    self.cmd.linear.y=0.2*(BOARD2[1]/abs(BOARD2[1]))
+                    self.cmd.linear.x=0.
+                else:
+                    self.cmd.linear.y=0.2*(BOARD3[1]/abs(BOARD3[1]))
+                    self.cmd.linear.x=0.
+            
+            elif (self.map.get('/obstacle3',None)!=None) and (coords_3[0]>0) and (-0.3<coords_3[1]<0.3): #if you see an obstacle, move to the right or to the left, depending on where the farest board is from the obstacle
+                idx_max_dist_y = np.argmax([abs(BOARD0[1]-coords_3[1]),abs(BOARD1[1]-coords_3[1]),abs(BOARD2[1]-coords_3[1]),abs(BOARD3[1]-coords_3[1])]) 
+                if idx_max_dist_y == 0:
+                    self.cmd.linear.y=0.2*(BOARD0[1]/abs(BOARD0[1]))
+                    self.cmd.linear.x=0.
+                elif idx_max_dist_y == 1:
+                    self.cmd.linear.y=0.2*(BOARD1[1]/abs(BOARD1[1]))
+                    self.cmd.linear.x=0.
+                elif idx_max_dist_y == 2:
+                    self.cmd.linear.y=0.2*(BOARD2[1]/abs(BOARD2[1]))
+                    self.cmd.linear.x=0.
+                else:
+                    self.cmd.linear.y=0.2*(BOARD3[1]/abs(BOARD3[1]))
+                    self.cmd.linear.x=0.
+
+
             elif GOAL1[0]>0.1: #if the goal is in front of you , move forward
                 self.cmd.linear.x=0.2
                 self.cmd.linear.y=0.
